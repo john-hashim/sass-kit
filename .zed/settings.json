@@ -1,0 +1,133 @@
+{
+  "format_on_save": "on",
+  "formatter": {
+    "external": {
+      "command": "node",
+      "arguments": [
+        ".zed/format.mjs",
+        "{buffer_path}"
+      ]
+    }
+  },
+  "languages": {
+    "JavaScript": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "TypeScript": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "TSX": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "JSX": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "JSON": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "JSONC": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    },
+    "CSS": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "node",
+          "arguments": [
+            ".zed/format.mjs",
+            "{buffer_path}"
+          ]
+        }
+      },
+      "language_servers": [
+        "biome",
+        "..."
+      ],
+      "code_actions_on_format": {}
+    }
+  }
+}
