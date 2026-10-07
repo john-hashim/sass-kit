@@ -25,10 +25,10 @@
   min-height: 100dvh;
   display: grid;
   grid-template-columns: 1.05fr 1fr;
-  background: white;
+  background: var(--color-outlet-bg);
 }
 .login-story {
-  background: var(--color-primary-bg);
+  background: var(--color-chrome-bg);
   padding: 40px 52px 28px;
   display: flex;
   flex-direction: column;
@@ -53,7 +53,7 @@
   margin: 24px 0;
 }
 .story-content h1 > span {
-  color: var(--color-emphasis-muted);
+  color: var(--color-secondary-text);
 }
 .story-content > p:not(.eyebrow) {
   color: var(--color-secondary-text);
@@ -61,12 +61,12 @@
   max-width: 340px;
 }
 .redaction-preview {
-  background: #ffffffb8;
-  border: 1px solid white;
+  background: var(--color-outlet-bg);
+  border: 1px solid var(--color-border-secondary);
   border-radius: 16px;
   padding: 20px;
   margin-top: 40px;
-  box-shadow: 0 20px 50px #43516e0b;
+  box-shadow: 0 20px 50px var(--color-shadow);
   transform: rotate(-2deg);
 }
 .preview-top {
@@ -87,22 +87,22 @@
   margin-left: auto;
   font-size: 8px;
   letter-spacing: 0.08em;
-  background: var(--color-surface-selected);
+  background: var(--color-chrome-hover);
   color: var(--color-green);
   padding: 5px 7px;
   border-radius: 4px;
 }
 .preview-document {
   padding: 24px;
-  background: white;
-  border: 1px solid var(--color-primary-bg);
+  background: var(--color-outlet-bg);
+  border: 1px solid var(--color-border-secondary);
   border-radius: 8px;
   margin: 16px 0;
 }
 
 .document-line {
   height: 7px;
-  background: var(--color-border);
+  background: var(--color-border-secondary);
   border-radius: 2px;
   margin-top: 20px;
   width: 90%;
@@ -120,13 +120,13 @@
 }
 .document-row i {
   height: 7px;
-  background: var(--color-border);
+  background: var(--color-border-secondary);
   flex: 1;
   border-radius: 2px;
 }
 .document-row b {
   height: 12px;
-  background: var(--color-action-primary);
+  background: var(--color-primary-text);
   width: 35%;
   border-radius: 2px;
 }
@@ -159,9 +159,9 @@
   place-items: center;
   width: 56px;
   height: 56px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-secondary);
   border-radius: 16px;
-  background: var(--color-primary-bg);
+  background: var(--color-chrome-bg);
 }
 .login-card > .eyebrow {
   margin: 32px 0 12px;
@@ -180,7 +180,7 @@
 }
 .login-divider {
   height: 1px;
-  background: var(--color-primary-bg);
+  background: var(--color-chrome-bg);
   margin: 28px 0 20px;
 }
 .login-note {
@@ -198,7 +198,7 @@
   position: absolute;
   bottom: 24px;
   font-size: 11px;
-  color: var(--color-icon-default);
+  color: var(--color-secondary-text);
 }
 @media (max-width: 900px) {
   .login-story {
@@ -241,4 +241,9 @@
   .login-card > .eyebrow {
     margin-top: 24px;
   }
+}
+
+.brand-mark,
+.login-symbol {
+  color: var(--color-secondary-text);
 }

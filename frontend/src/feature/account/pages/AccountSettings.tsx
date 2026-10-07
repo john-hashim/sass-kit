@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { initials } from '@/feature/layout/Icon'
+import { ThemeSettings } from '@/feature/theme/components/ThemeSettings'
 import { useAccountStore, useUserStore } from '@/store'
 
 export function AccountSettings() {
@@ -59,14 +60,14 @@ export function AccountSettings() {
             <h2 className="font-semibold text-lg text-text-primary leading-none tracking-tight">
               Profile Information
             </h2>
-            <p className="text-text-weak text-sm mt-1.5">Update your personal information.</p>
+            <p className="text-text-secondary text-sm mt-1.5">Update your personal information.</p>
           </div>
           <div className="p-6">
             <form onSubmit={save} className="flex flex-col gap-6">
               <div>
-                <p className="text-sm font-medium text-text-primary">Profile picture</p>
+                <p className="text-sm font-medium text-text-secondary">Profile picture</p>
                 <div className="flex justify-between items-center gap-3">
-                  <p className="text-text-weak text-[12px]">
+                  <p className="text-text-secondary text-[12px]">
                     Your initials are used as your profile picture.
                   </p>
                   <Avatar size={40}>
@@ -75,9 +76,7 @@ export function AccountSettings() {
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name" className="text-[var(--color-primary-text)]">
-                  Name
-                </Label>
+                <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
                   name="name"
@@ -120,7 +119,7 @@ export function AccountSettings() {
             <h2 className="font-semibold text-lg text-text-primary leading-none tracking-tight">
               Google account
             </h2>
-            <p className="text-text-weak text-sm mt-1.5">
+            <p className="text-text-secondary text-sm mt-1.5">
               This is the email address you use to sign in with Google.
             </p>
           </div>
@@ -135,20 +134,30 @@ export function AccountSettings() {
             />
           </div>
         </Card>
+        <Card>
+          <div className="px-6 pt-6">
+            <h2 className="font-semibold text-lg text-text-primary leading-none tracking-tight">
+              App Settings
+            </h2>
+          </div>
+          <div className="p-6">
+            <ThemeSettings />
+          </div>
+        </Card>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border-week" />
+            <span className="w-full border-t border-[var(--color-border-secondary)]" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-8 font-semibold text-error">Danger Zone</span>
+            <span className="bg-background px-8 font-semibold text-error">Danger Zone</span>
           </div>
         </div>
-        <Card className="border-red-200">
+        <Card className="border-[var(--color-border-primary)]">
           <div className="p-6">
             <h2 className="font-semibold text-lg text-error leading-none tracking-tight">
               Delete account
             </h2>
-            <p className="text-text-weak text-sm mt-1.5">
+            <p className="text-text-secondary text-sm mt-1.5">
               Once you delete your account, there is no going back. Your studio profile will be
               deleted and all active sessions will end. <b>This action is not reversible.</b>
             </p>

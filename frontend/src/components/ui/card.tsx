@@ -6,7 +6,10 @@ function Card({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
-      className={cn('rounded-xl border border-border-week bg-white shadow-xs', className)}
+      className={cn(
+        'rounded-xl border border-[var(--color-border-secondary)] bg-background',
+        className
+      )}
       {...props}
     />
   )

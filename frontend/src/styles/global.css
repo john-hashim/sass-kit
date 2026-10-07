@@ -6,44 +6,38 @@
 @import "@fontsource/inter/700.css";
 @import "./colors.css";
 
-/*
- * shadcn semantic tokens → our design palette (colors.css is source of truth).
- * Keep literal values here so Tailwind can resolve theme utilities at parse time.
- */
+/* Shared control tokens resolve directly from colors.css in both themes. */
 :root {
-  --background: #ffffff;
-  --foreground: #1a1d24;
-  --card: #ffffff;
-  --card-foreground: #1a1d24;
-  --popover: #ffffff;
-  --popover-foreground: #1a1d24;
-  --primary: #2a2f3a; /* --color-action-primary */
-  --primary-foreground: #ffffff;
-  --secondary: #eef0f4; /* --color-surface-selected */
-  --secondary-foreground: #1a1d24;
-  --muted: #f7f8fa; /* --color-primary-bg */
-  --muted-foreground: #626b78; /* --color-secondary-text */
-  --accent: #eef0f4;
-  --accent-foreground: #1a1d24;
-  --destructive: #c72027;
-  --input: #e8eaef; /* --color-border */
-  --ring: #2a2f3a; /* --color-action-primary */
-  --radius: 0.5rem; /* 8px */
+  --background: var(--color-outlet-bg);
+  --foreground: var(--color-primary-text);
+  --card: var(--color-outlet-bg);
+  --card-foreground: var(--color-primary-text);
+  --popover: var(--color-outlet-bg);
+  --popover-foreground: var(--color-primary-text);
+  --primary: var(--color-button-primary-bg);
+  --primary-foreground: var(--color-button-primary-text);
+  --secondary: var(--color-chrome-hover);
+  --secondary-foreground: var(--color-primary-text);
+  --muted: var(--color-chrome-bg);
+  --muted-foreground: var(--color-secondary-text);
+  --accent: var(--color-outlet-hover);
+  --accent-foreground: var(--color-primary-text);
+  --destructive: var(--color-red-dark);
+  --input: var(--color-border-secondary);
+  --ring: var(--color-border-primary);
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --font-sans: Inter, sans-serif;
 
-  /* Text → new palette */
+  /* Text */
   --color-text-primary: var(--color-primary-text);
-  --color-text-weak: var(--color-secondary-text);
-
-  /* Borders → new palette */
-  --color-border-week: var(--color-border);
+  --color-text-secondary: var(--color-secondary-text);
 
   /* Status colors */
-  --color-error: #c72027;
-  --color-success: #58a182;
+  --color-error: var(--color-red-dark);
+  --color-success: var(--color-green);
 
   /* shadcn / Tailwind semantic colors */
   --color-background: var(--background);
@@ -73,7 +67,7 @@
 .menu-btn {
   font-size: 14px;
   cursor: pointer;
-  color: var(--color-text-weak);
+  color: var(--color-secondary-text);
   border-radius: 10px;
   background-color: transparent;
   border: none;
@@ -90,23 +84,29 @@
     color 0.4s ease;
 }
 .menu-btn:hover {
-  background-color: var(--color-background-hover);
-  color: var(--color-text-primary);
+  background-color: var(--color-outlet-hover);
+  color: var(--color-primary-text);
 }
 .menu-btn:focus-visible {
-  background-color: var(--color-background-hover);
-  color: var(--color-text-primary);
+  background-color: var(--color-outlet-hover);
+  color: var(--color-primary-text);
 }
 .menu-btn-danger {
-  color: #f87171;
+  color: var(--color-red-dark);
 }
 .menu-btn-danger:hover,
 .menu-btn-danger:focus-visible {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #f87171;
+  background-color: var(--color-outlet-hover);
+  color: var(--color-primary-text);
 }
 
 @layer base {
+  *,
+  ::before,
+  ::after {
+    --tw-shadow-color: var(--color-shadow);
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
   }

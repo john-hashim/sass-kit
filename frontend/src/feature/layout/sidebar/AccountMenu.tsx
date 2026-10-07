@@ -5,12 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { useUserStore } from '@/store'
-import { expandedTextStyle } from './sidebar.styles'
 
 interface AccountMenuProps {
-  expanded: boolean
   isMobile: boolean
-  /** Navigate to a path and close the mobile sidebar if open. */
+  /** Navigate to a path and close the sidebar. */
   onNavigate: (path: string) => void
 }
 
@@ -18,10 +16,9 @@ interface AccountMenuProps {
  * Signed-in user button at the bottom of the sidebar.
  * Opens an anchored popover on desktop and a bottom sheet on mobile.
  */
-export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, onNavigate }) => {
+export const AccountMenu: React.FC<AccountMenuProps> = ({ isMobile, onNavigate }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const { logout, user, loggingOut: busy, logoutError: error } = useUserStore()
-  const compact = !isMobile && !expanded
 
   const handleMenuNav = useCallback(
     (path: string) => {
@@ -54,35 +51,31 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
   const accountTrigger = (
     <button
       type="button"
+      className="group hover:bg-[var(--color-chrome-hover)]"
       aria-label="Account menu"
       aria-expanded={menuOpen}
       style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: compact ? 'center' : 'flex-start',
-        gap: compact ? 0 : 10,
+        justifyContent: 'flex-start',
+        gap: 10,
         width: '100%',
         height: 38,
-        padding: compact ? '4px 0' : '4px 6px',
+        padding: '4px 6px',
         borderRadius: 8,
         border: 'none',
-        background: 'transparent',
         cursor: 'pointer',
         transition: 'background-color 200ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-background-hover)')}
-      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       <Avatar size={30} style={{ flexShrink: 0 }}>
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
       <div
         style={{
-          display: compact ? 'none' : 'block',
           minWidth: 0,
           flex: 1,
           textAlign: 'left',
-          ...expandedTextStyle(expanded),
         }}
       >
         <p className="m-0 truncate text-sm font-semibold leading-[1.15]">{user?.name}</p>
@@ -127,6 +120,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
       <>
         <button
           type="button"
+          className="group hover:bg-[var(--color-chrome-hover)]"
           aria-label="Account menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(o => !o)}
@@ -140,7 +134,6 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
             padding: '4px 6px',
             borderRadius: 8,
             border: 'none',
-            background: 'transparent',
             cursor: 'pointer',
             transition: 'background-color 200ms ease',
           }}
@@ -148,7 +141,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
           <Avatar size={30} style={{ flexShrink: 0 }}>
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          <div style={{ minWidth: 0, flex: 1, textAlign: 'left', ...expandedTextStyle(expanded) }}>
+          <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
             <p className="m-0 truncate text-sm font-semibold leading-[1.15]">{user?.name}</p>
             <p className="m-0 truncate text-xs leading-[1.15] text-[var(--color-secondary-text)]">
               {user?.email}
@@ -157,10 +150,11 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
         </button>
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetContent
+            data-sidebar-popup
             side="bottom"
             showCloseButton={false}
-            className="z-[300] max-h-[80vh] gap-0 overflow-y-auto rounded-t-[20px] border-t border-[var(--color-border)] bg-white p-0 shadow-[0_-8px_30px_-8px_#00000033]"
-            overlayClassName="z-[300] bg-black/40"
+            className="z-[300] max-h-[80vh] gap-0 overflow-y-auto rounded-t-[20px] border-t border-[var(--color-border-secondary)] bg-background p-0 shadow-[0_-8px_30px_-8px_var(--color-shadow)]"
+            overlayClassName="z-[300] bg-[var(--color-overlay)]"
           >
             <SheetTitle className="sr-only">Account menu</SheetTitle>
             <SheetDescription className="sr-only">Account settings and sign out</SheetDescription>
@@ -177,6 +171,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
                 </div>
                 <button
                   type="button"
+                  className="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-text)] hover:bg-[var(--color-outlet-hover)]"
                   aria-label="Close menu"
                   onClick={() => setMenuOpen(false)}
                   style={{
@@ -187,8 +182,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: 'rgba(0,0,0,0.05)',
-                    color: '#495057',
+                    backgroundColor: 'var(--color-outlet-hover)',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -211,16 +205,17 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ expanded, isMobile, on
     <Popover open={menuOpen} onOpenChange={setMenuOpen}>
       <PopoverTrigger asChild>{accountTrigger}</PopoverTrigger>
       <PopoverContent
+        data-sidebar-popup
         side="top"
         align="start"
         sideOffset={8}
-        className="z-[200] w-55 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white px-2 py-3 shadow-md"
+        className="z-[300] w-55 overflow-hidden rounded-xl border border-[var(--color-border-secondary)] bg-background px-2 py-3 shadow-md"
       >
         <div className="px-2 pb-1">
           <p className="m-0 text-[12px] font-semibold leading-[1.3] text-text-primary">
             {user?.name}
           </p>
-          <p className="m-0 mt-0.5 truncate text-[12px] text-text-weak">{user?.email}</p>
+          <p className="m-0 mt-0.5 truncate text-[12px] text-text-secondary">{user?.email}</p>
         </div>
 
         <Separator className="my-2" />

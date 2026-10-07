@@ -4,21 +4,12 @@ import { Slot } from 'radix-ui'
 import type * as React from 'react'
 import { cn } from '@/lib/utils'
 
-/**
- * Button variants mirror the previous Mantine theme (theme.module.css):
- * - default: black fill, white text
- * - primary: cool charcoal (#2A2F3A)
- * - secondary: transparent + border
- * - secondary-filled: soft gray fill
- * - app-special: warm highlight (#ecbd85)
- * - destructive: red fill (delete actions)
- * - ghost / subtle: icon-style no fill
- */
+/** Three action styles: primary, secondary, and destructive (delete). */
 const buttonVariants = cva(
   [
     'inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-0.5 rounded-md font-normal whitespace-nowrap',
     'transition-[background-color,border-color,color,opacity] outline-none',
-    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-action-primary)]',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-primary)]',
     'disabled:cursor-not-allowed disabled:opacity-60',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
     "[&_svg:not([class*='size-'])]:size-3.5",
@@ -27,23 +18,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border border-black bg-black text-white hover:border-[#333] hover:bg-[#333]',
         primary:
-          'border-0 bg-[var(--color-action-primary)] text-white hover:bg-[var(--color-emphasis-strong)]',
+          'border-0 bg-[var(--color-button-primary-bg)] text-[var(--color-button-primary-text)] hover:bg-[var(--color-button-primary-hover)]',
         secondary:
-          'border border-[var(--color-border)] bg-transparent text-[var(--color-primary-text)] hover:border-[var(--color-border-hover)] hover:bg-transparent',
-        /** Alias for secondary — used by shadcn dialog defaults */
-        outline:
-          'border border-[var(--color-border)] bg-transparent text-[var(--color-primary-text)] hover:border-[var(--color-border-hover)] hover:bg-transparent',
-        'secondary-filled':
-          'border-0 bg-[var(--color-surface-selected)] text-[var(--color-emphasis-strong)] hover:bg-[#e0e3e9]',
-        'app-special':
-          'border-0 bg-[#ecbd85] text-[var(--color-primary-text)] hover:bg-[color-mix(in_srgb,#ecbd85_88%,black)]',
-        destructive: 'border-0 bg-[var(--color-error)] text-white hover:bg-[#a51b21]',
-        ghost:
-          'border-0 bg-transparent text-[var(--color-secondary-text)] hover:bg-[var(--color-background-hover)] hover:text-[var(--color-primary-text)]',
-        subtle:
-          'border-0 bg-transparent text-[var(--color-secondary-text)] hover:bg-[var(--color-background-hover)] hover:text-[var(--color-primary-text)]',
+          'border-0 bg-[var(--color-button-secondary-bg)] text-[var(--color-button-secondary-text)] hover:bg-[var(--color-button-secondary-hover)]',
+        destructive:
+          'border-0 bg-[var(--color-red-dark)] text-[var(--color-button-delete-text)] hover:bg-[var(--color-button-delete-hover)]',
       },
       size: {
         // Mantine 8.3.7 Button sizes used by the app: sm/default 36×18px
@@ -59,7 +39,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'primary',
       size: 'default',
     },
   }
@@ -67,7 +47,7 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  variant = 'default',
+  variant = 'primary',
   size = 'default',
   asChild = false,
   loading = false,

@@ -1,29 +1,48 @@
-/* Design system color palette. Use anywhere via var(--color-*). */
+/* The app palette. Keep all theme colors here. */
 :root {
-  /* Text — cool charcoal / soft gray (airy, positive) */
-  --color-primary-text: #1a1d24;
-  --color-secondary-text: #626b78;
+  color-scheme: light;
+  --color-outlet-bg: #ffffff;
+  --color-chrome-bg: #f3f3f3;
+  --color-primary-text: #050505;
+  --color-secondary-text: #636363;
+  --color-border-primary: #c6c6c6;
+  --color-border-secondary: #eaeaea;
+  --color-chrome-hover: #e7e7e7;
+  --color-outlet-hover: #f9f9f9;
 
-  /* Borders — soft cool gray */
-  --color-border: #e8eaef;
-  --color-border-hover: #c8cdd6;
-  --color-border-selected: #1a1d24;
+  /* Action buttons. Secondary keeps the existing warm fill in light mode. */
+  --color-button-primary-bg: var(--color-primary-text);
+  --color-button-primary-text: var(--color-outlet-bg);
+  --color-button-primary-hover: color-mix(
+    in srgb,
+    var(--color-primary-text) 88%,
+    var(--color-outlet-bg)
+  );
+  --color-button-secondary-bg: #ecbd85;
+  --color-button-secondary-text: #050505;
+  --color-button-secondary-hover: color-mix(in srgb, var(--color-button-secondary-bg) 88%, #050505);
+  --color-button-delete-text: #ffffff;
+  --color-button-delete-hover: #a51b21;
 
-  /* Backgrounds — white / cool light gray */
-  --color-surface: #ffffff;
-  --color-primary-bg: #f7f8fa;
-  --color-secondary-bg: var(--color-border);
-  --color-surface-selected: #eef0f4;
-  --color-background-hover: #eef0f3;
+  /* Compatibility aliases for shared semantic tokens. */
+  --color-surface: var(--color-outlet-bg);
+  --color-primary-bg: var(--color-chrome-bg);
+  --color-secondary-bg: var(--color-border-secondary);
+  --color-border: var(--color-border-secondary);
+  --color-border-hover: var(--color-border-primary);
+  --color-border-selected: var(--color-border-primary);
+  --color-surface-selected: var(--color-chrome-hover);
+  --color-background-hover: var(--color-outlet-hover);
+  --color-emphasis-strong: var(--color-primary-text);
+  --color-emphasis-muted: var(--color-secondary-text);
+  --color-emphasis-medium: var(--color-secondary-text);
+  --color-icon-default: var(--color-secondary-text);
+  --color-action-primary: #050505;
+  --color-error: var(--color-red-dark);
 
-  /* Emphasis and actions — cool slate / charcoal */
-  --color-emphasis-strong: #1a1d24;
-  --color-emphasis-muted: #626b78;
-  --color-emphasis-medium: #3d4452;
-  --color-action-primary: #2a2f3a;
-
-  /* Icons */
-  --color-icon-default: #8b93a1;
+  /* Overlays and shadows derive from the palette. */
+  --color-overlay: color-mix(in srgb, #050505 40%, transparent);
+  --color-shadow: color-mix(in srgb, #050505 20%, transparent);
 
   /* Reusable accent colors */
   --color-red-dark: #c62a2f;
@@ -37,4 +56,34 @@
   --color-weekend: #f6a0a3;
   --color-switch-enabled: #30a46c;
   --color-gray: #6b7280;
+}
+
+/* Follow the system theme unless the root explicitly selects light. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-outlet-bg: #1e1e1e;
+    --color-chrome-bg: #262626;
+    --color-primary-text: #f3f3f3;
+    --color-secondary-text: #a0a0a0;
+    --color-border-primary: #505050;
+    --color-border-secondary: #333333;
+    --color-chrome-hover: #3e3e3e;
+    --color-outlet-hover: #373737;
+    --color-button-secondary-bg: var(--color-orange);
+  }
+}
+
+:root.dark,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-outlet-bg: #1e1e1e;
+  --color-chrome-bg: #262626;
+  --color-primary-text: #f3f3f3;
+  --color-secondary-text: #a0a0a0;
+  --color-border-primary: #505050;
+  --color-border-secondary: #333333;
+  --color-chrome-hover: #3e3e3e;
+  --color-outlet-hover: #373737;
+  --color-button-secondary-bg: var(--color-orange);
 }

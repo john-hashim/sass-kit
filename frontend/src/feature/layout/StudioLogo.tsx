@@ -1,4 +1,5 @@
 import { ShieldCheck } from 'lucide-react'
+import { AppName } from './AppName'
 
 export function StudioLogo({
   withName = true,
@@ -10,9 +11,9 @@ export function StudioLogo({
   height?: number
 }) {
   return (
-    <span className="inline-flex items-center gap-2 font-semibold text-[var(--color-emphasis-strong)]">
+    <span className="inline-flex items-center gap-2 font-semibold text-[var(--color-secondary-text)]">
       <ShieldCheck size={height ?? width} strokeWidth={1.5} aria-hidden />
-      {withName && <span>Redaction Studio</span>}
+      {withName && <AppName />}
     </span>
   )
 }

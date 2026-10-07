@@ -1,4 +1,4 @@
-import { LayoutDashboard } from 'lucide-react'
+import { Files, History, LayoutDashboard, Settings } from 'lucide-react'
 
 export interface NavIconProps {
   size?: number
@@ -16,6 +16,16 @@ const iconProps = (size: number) => ({
 
 export const DashboardIcon: React.FC<NavIconProps> = ({ size = 14 }) => (
   <LayoutDashboard {...iconProps(size)} />
+)
+
+export const FilesIcon: React.FC<NavIconProps> = ({ size = 14 }) => <Files {...iconProps(size)} />
+
+export const ActivityLogIcon: React.FC<NavIconProps> = ({ size = 14 }) => (
+  <History {...iconProps(size)} />
+)
+
+export const SettingsIcon: React.FC<NavIconProps> = ({ size = 14 }) => (
+  <Settings {...iconProps(size)} />
 )
 
 export type NavIconComponent = React.FC<NavIconProps>
