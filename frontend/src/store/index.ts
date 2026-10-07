@@ -30,6 +30,7 @@ export const useAccountStore = () =>
   useStore(
     useShallow(state => ({
       profileSaving: state.profileSaving,
+      themeSaving: state.themeSaving,
       accountDeleting: state.accountDeleting,
       profileError: state.profileError,
       deleteError: state.deleteError,

@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun } from 'lucide-react'
+import { Loader2, Monitor, Moon, Sun } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { useAccountStore, useUserStore } from '@/store'
 
@@ -10,7 +10,7 @@ const themes = [
 
 export function ThemeSettings() {
   const { user, loggingOut } = useUserStore()
-  const { updateTheme, profileSaving, accountDeleting } = useAccountStore()
+  const { updateTheme, profileSaving, themeSaving, accountDeleting } = useAccountStore()
   const theme = user?.theme ?? 'dark'
 
   return (
@@ -20,7 +20,8 @@ export function ThemeSettings() {
       </h3>
       <fieldset
         className="relative grid h-9 w-30 shrink-0 grid-cols-3 rounded-lg border border-[var(--color-border-secondary)] bg-[var(--color-chrome-bg)] p-1"
-        disabled={!user || profileSaving || accountDeleting || loggingOut}
+        disabled={!user || profileSaving || themeSaving || accountDeleting || loggingOut}
+        aria-busy={themeSaving}
       >
         <legend className="sr-only">Choose theme</legend>
         <span
@@ -56,6 +57,12 @@ export function ThemeSettings() {
           </div>
         ))}
       </fieldset>
+      {themeSaving && (
+        <span role="status" className="text-text-secondary">
+          <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
+          <span className="sr-only">Saving theme…</span>
+        </span>
+      )}
     </section>
   )
 }

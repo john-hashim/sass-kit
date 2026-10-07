@@ -39,6 +39,16 @@
   --color-icon-default: var(--color-secondary-text);
   --color-action-primary: #050505;
   --color-error: var(--color-red-dark);
+  --color-notification-success: color-mix(
+    in srgb,
+    var(--color-green) 60%,
+    var(--color-primary-text)
+  );
+  --color-notification-error: color-mix(
+    in srgb,
+    var(--color-red-dark) 60%,
+    var(--color-primary-text)
+  );
 
   /* Overlays and shadows derive from the palette. */
   --color-overlay: color-mix(in srgb, #050505 40%, transparent);

@@ -49,6 +49,28 @@ describe('accountSlice', () => {
     expect(store.getState().user?.theme).toBe('light')
   })
 
+  it('tracks theme loading separately and blocks conflicting account changes', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    let finish: (value: AxiosResponse<ApiResponse<User>>) => void = () => {}
+    vi.mocked(authService.updateTheme).mockReturnValue(
+      new Promise(resolve => {
+        finish = resolve
+      })
+    )
+    const pending = store.getState().updateTheme('light')
+    expect(store.getState()).toMatchObject({ themeSaving: true, profileSaving: false })
+    await store.getState().updateName('Updated')
+    await store.getState().updateTheme('system')
+    await store.getState().deleteAccount()
+    expect(authService.updateName).not.toHaveBeenCalled()
+    expect(authService.updateTheme).toHaveBeenCalledTimes(1)
+    expect(authService.deleteAccount).not.toHaveBeenCalled()
+    finish(response({ ...user, theme: 'light' }))
+    await pending
+    expect(store.getState()).toMatchObject({ themeSaving: false, profileSaving: false })
+  })
+
   it('preserves the saved theme if a theme request fails', async () => {
     const store = makeStore()
     store.setState({ user })
@@ -56,6 +78,7 @@ describe('accountSlice', () => {
     await expect(store.getState().updateTheme('system')).rejects.toThrow()
     expect(store.getState().user?.theme).toBe('dark')
     expect(store.getState().profileSaving).toBe(false)
+    expect(store.getState().themeSaving).toBe(false)
     expect(store.getState().profileError).toContain('Network error')
   })
 
@@ -70,6 +93,7 @@ describe('accountSlice', () => {
     )
     const pending = store.getState().updateTheme('system')
     store.getState().resetSession()
+    expect(store.getState().themeSaving).toBe(false)
     finish(response({ ...user, theme: 'system' }))
     await pending
     expect(store.getState().user).toBeNull()

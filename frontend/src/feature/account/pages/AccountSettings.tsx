@@ -17,12 +17,14 @@ import { Label } from '@/components/ui/label'
 import { initials } from '@/feature/layout/Icon'
 import { ThemeSettings } from '@/feature/theme/components/ThemeSettings'
 import { useAccountStore, useUserStore } from '@/store'
+import { showNotification } from '@/utils/notifications'
 
 export function AccountSettings() {
   const { user } = useUserStore()
   const [name, setName] = useState(user?.name ?? '')
   const {
     profileSaving: saving,
+    themeSaving,
     accountDeleting: deleting,
     profileError: error,
     deleteError,
@@ -30,16 +32,14 @@ export function AccountSettings() {
     deleteAccount,
     clearAccountErrors,
   } = useAccountStore()
-  const [message, setMessage] = useState('')
   const [deleteOpen, setDeleteOpen] = useState(false)
   async function save(event: FormEvent) {
     event.preventDefault()
-    setMessage('')
     try {
       const updated = await updateName(name.trim())
       if (!updated) return
       setName(updated.name)
-      setMessage('Your profile has been updated.')
+      showNotification('success', 'Name updated.')
     } catch {
       // The store exposes the request error to the form.
     }
@@ -84,10 +84,9 @@ export function AccountSettings() {
                   required
                   maxLength={100}
                   value={name}
-                  disabled={saving || deleting}
+                  disabled={saving || themeSaving || deleting}
                   onChange={event => {
                     setName(event.target.value)
-                    setMessage('')
                   }}
                 />
               </div>
@@ -96,18 +95,13 @@ export function AccountSettings() {
                   {error}
                 </p>
               )}
-              {message && (
-                <p role="status" className="text-sm text-success">
-                  {message}
-                </p>
-              )}
               <Button
                 type="submit"
                 variant="primary"
                 size="sm"
                 className="self-end"
                 loading={saving}
-                disabled={deleting || !name.trim() || name.trim() === user?.name}
+                disabled={themeSaving || deleting || !name.trim() || name.trim() === user?.name}
               >
                 Save changes
               </Button>
@@ -168,7 +162,7 @@ export function AccountSettings() {
               size="sm"
               className="w-full md:w-auto"
               type="button"
-              disabled={saving || deleting}
+              disabled={saving || themeSaving || deleting}
               onClick={() => {
                 clearAccountErrors()
                 setDeleteOpen(true)

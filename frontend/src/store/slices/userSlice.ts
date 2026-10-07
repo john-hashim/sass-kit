@@ -68,6 +68,7 @@ export const createUserSlice: StateCreator<StoreState, [], [], UserSlice> = (set
       loggingOut: false,
       logoutError: null,
       profileSaving: false,
+      themeSaving: false,
       accountDeleting: false,
       profileError: null,
       deleteError: null,

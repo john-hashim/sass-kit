@@ -137,6 +137,13 @@
     }
   },
   "lsp": {
+    "prisma-language-server": {
+      "settings": {
+        "prisma": {
+          "pinToPrisma6": true
+        }
+      }
+    },
     "biome": {
       "settings": {
         "inline_config": {

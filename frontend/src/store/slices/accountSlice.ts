@@ -8,6 +8,7 @@ import type { StoreState } from '../types'
 
 export interface AccountSlice {
   profileSaving: boolean
+  themeSaving: boolean
   accountDeleting: boolean
   profileError: string | null
   deleteError: string | null
@@ -18,10 +19,20 @@ export interface AccountSlice {
 }
 
 export const createAccountSlice: StateCreator<StoreState, [], [], AccountSlice> = (set, get) => {
-  const saveProfile = async (request: () => Promise<AxiosResponse<ApiResponse<User>>>) => {
-    if (!get().user || get().profileSaving || get().accountDeleting || get().loggingOut) return
+  const saveProfile = async (
+    request: () => Promise<AxiosResponse<ApiResponse<User>>>,
+    savingKey: 'profileSaving' | 'themeSaving'
+  ) => {
+    if (
+      !get().user ||
+      get().profileSaving ||
+      get().themeSaving ||
+      get().accountDeleting ||
+      get().loggingOut
+    )
+      return
     const version = get().sessionVersion
-    set({ profileSaving: true, profileError: null })
+    set({ [savingKey]: true, profileError: null })
     try {
       const response = await request()
       if (!response.data.data) throw new Error('Invalid profile response.')
@@ -36,19 +47,27 @@ export const createAccountSlice: StateCreator<StoreState, [], [], AccountSlice> 
       }
       throw error
     } finally {
-      if (get().sessionVersion === version) set({ profileSaving: false })
+      if (get().sessionVersion === version) set({ [savingKey]: false })
     }
   }
   return {
     profileSaving: false,
+    themeSaving: false,
     accountDeleting: false,
     profileError: null,
     deleteError: null,
     clearAccountErrors: () => set({ profileError: null, deleteError: null }),
-    updateName: name => saveProfile(() => authService.updateName(name)),
-    updateTheme: theme => saveProfile(() => authService.updateTheme(theme)),
+    updateName: name => saveProfile(() => authService.updateName(name), 'profileSaving'),
+    updateTheme: theme => saveProfile(() => authService.updateTheme(theme), 'themeSaving'),
     deleteAccount: async () => {
-      if (!get().user || get().accountDeleting || get().profileSaving || get().loggingOut) return
+      if (
+        !get().user ||
+        get().accountDeleting ||
+        get().profileSaving ||
+        get().themeSaving ||
+        get().loggingOut
+      )
+        return
       const version = get().sessionVersion
       set({ accountDeleting: true, deleteError: null })
       try {
