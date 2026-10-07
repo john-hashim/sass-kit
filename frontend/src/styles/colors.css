@@ -1,0 +1,40 @@
+/* Design system color palette. Use anywhere via var(--color-*). */
+:root {
+  /* Text — cool charcoal / soft gray (airy, positive) */
+  --color-primary-text: #1a1d24;
+  --color-secondary-text: #626b78;
+
+  /* Borders — soft cool gray */
+  --color-border: #e8eaef;
+  --color-border-hover: #c8cdd6;
+  --color-border-selected: #1a1d24;
+
+  /* Backgrounds — white / cool light gray */
+  --color-surface: #ffffff;
+  --color-primary-bg: #f7f8fa;
+  --color-secondary-bg: var(--color-border);
+  --color-surface-selected: #eef0f4;
+  --color-background-hover: #eef0f3;
+
+  /* Emphasis and actions — cool slate / charcoal */
+  --color-emphasis-strong: #1a1d24;
+  --color-emphasis-muted: #626b78;
+  --color-emphasis-medium: #3d4452;
+  --color-action-primary: #2a2f3a;
+
+  /* Icons */
+  --color-icon-default: #8b93a1;
+
+  /* Reusable accent colors */
+  --color-red-dark: #c62a2f;
+  --color-yellow: #ffc63c;
+  --color-accent-primary: #3f63dd;
+  --color-orange: #f76809;
+  --color-violet: #6049e7;
+  --color-purple: #ab4aba;
+  --color-green: #2e9d61;
+  --color-weekday: #a9dcd9;
+  --color-weekend: #f6a0a3;
+  --color-switch-enabled: #30a46c;
+  --color-gray: #6b7280;
+}

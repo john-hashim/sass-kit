@@ -23,6 +23,7 @@
       },
       "language_servers": [
         "biome",
+        "tailwindcss-language-server",
         "..."
       ],
       "code_actions_on_format": {}
@@ -40,6 +41,7 @@
       },
       "language_servers": [
         "biome",
+        "tailwindcss-language-server",
         "..."
       ],
       "code_actions_on_format": {}
@@ -57,6 +59,7 @@
       },
       "language_servers": [
         "biome",
+        "tailwindcss-language-server",
         "..."
       ],
       "code_actions_on_format": {}
@@ -74,6 +77,7 @@
       },
       "language_servers": [
         "biome",
+        "tailwindcss-language-server",
         "..."
       ],
       "code_actions_on_format": {}
@@ -125,9 +129,32 @@
       },
       "language_servers": [
         "biome",
+        "tailwindcss-intellisense-css",
+        "!vscode-css-language-server",
         "..."
       ],
       "code_actions_on_format": {}
+    }
+  },
+  "lsp": {
+    "biome": {
+      "settings": {
+        "inline_config": {
+          "css": {
+            "parser": {
+              "tailwindDirectives": true
+            }
+          }
+        }
+      }
+    },
+    "tailwindcss-language-server": {
+      "settings": {
+        "classFunctions": [
+          "cn",
+          "cva"
+        ]
+      }
     }
   }
 }

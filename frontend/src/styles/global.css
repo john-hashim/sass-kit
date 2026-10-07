@@ -1,13 +1,113 @@
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "./colors.css";
+
+/*
+ * shadcn semantic tokens → our design palette (colors.css is source of truth).
+ * Keep literal values here so Tailwind can resolve theme utilities at parse time.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #1a1d24;
+  --card: #ffffff;
+  --card-foreground: #1a1d24;
+  --popover: #ffffff;
+  --popover-foreground: #1a1d24;
+  --primary: #2a2f3a; /* --color-action-primary */
+  --primary-foreground: #ffffff;
+  --secondary: #eef0f4; /* --color-surface-selected */
+  --secondary-foreground: #1a1d24;
+  --muted: #f7f8fa; /* --color-primary-bg */
+  --muted-foreground: #626b78; /* --color-secondary-text */
+  --accent: #eef0f4;
+  --accent-foreground: #1a1d24;
+  --destructive: #c72027;
+  --input: #e8eaef; /* --color-border */
+  --ring: #2a2f3a; /* --color-action-primary */
+  --radius: 0.5rem; /* 8px */
 }
-main {
-  max-width: 40rem;
-  margin: 4rem auto;
-  padding: 0 1rem;
+
+@theme inline {
+  --font-sans: Inter, sans-serif;
+
+  /* Text → new palette */
+  --color-text-primary: var(--color-primary-text);
+  --color-text-weak: var(--color-secondary-text);
+
+  /* Borders → new palette */
+  --color-border-week: var(--color-border);
+
+  /* Status colors */
+  --color-error: #c72027;
+  --color-success: #58a182;
+
+  /* shadcn / Tailwind semantic colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
+  --radius-xl: calc(var(--radius) * 2);
 }
-button,
-a {
-  font: inherit;
+
+/* User menu popup buttons */
+.menu-btn {
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--color-text-weak);
+  border-radius: 10px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  text-align: left;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+.menu-btn:hover {
+  background-color: var(--color-background-hover);
+  color: var(--color-text-primary);
+}
+.menu-btn:focus-visible {
+  background-color: var(--color-background-hover);
+  color: var(--color-text-primary);
+}
+.menu-btn-danger {
+  color: #f87171;
+}
+.menu-btn-danger:hover,
+.menu-btn-danger:focus-visible {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
 }

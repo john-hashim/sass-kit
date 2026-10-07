@@ -149,3 +149,44 @@ test('missing Google configuration returns a useful login error', async () => {
     .expect(302)
   assert.equal(response.headers.location, `${env.frontendUrl}/login?error=not_configured`)
 })
+
+test('profile updates validate origin and name, and survive a subsequent Google login', async () => {
+  const { agent, callback } = await beginLogin()
+  await agent.get(callback).expect(302)
+  await request(app).patch('/api/auth/me').send({ name: 'New Name' }).expect(401)
+  await agent
+    .patch('/api/auth/me')
+    .set('Origin', 'https://attacker.example')
+    .send({ name: 'New Name' })
+    .expect(403)
+  for (const name of ['', '   ', 'x'.repeat(101), 123]) {
+    await agent.patch('/api/auth/me').set('Origin', env.frontendUrl).send({ name }).expect(400)
+  }
+  const updated = await agent
+    .patch('/api/auth/me')
+    .set('Origin', env.frontendUrl)
+    .send({ name: '  New Name  ' })
+    .expect(200)
+  assert.equal(updated.body.data.name, 'New Name')
+  assert.equal(updated.body.data.googleId, undefined)
+  const second = await beginLogin()
+  await second.agent.get(second.callback).expect(302)
+  const me = await second.agent.get('/api/auth/me').expect(200)
+  assert.equal(me.body.data.name, 'New Name')
+})
+
+test('account deletion validates origin and revokes every session', async () => {
+  await request(app).delete('/api/auth/me').set('Origin', env.frontendUrl).expect(401)
+  const first = await beginLogin()
+  await first.agent.get(first.callback).expect(302)
+  const second = await beginLogin()
+  await second.agent.get(second.callback).expect(302)
+  await first.agent.delete('/api/auth/me').set('Origin', 'https://attacker.example').expect(403)
+  assert.equal(await db.user.count(), 1)
+  const result = await first.agent.delete('/api/auth/me').set('Origin', env.frontendUrl).expect(204)
+  assert.match(String(result.headers['set-cookie']), /redaction_session=;/)
+  await first.agent.get('/api/auth/me').expect(401)
+  await second.agent.get('/api/auth/me').expect(401)
+  assert.equal(await db.session.count(), 0)
+  assert.equal(await db.user.count(), 0)
+})

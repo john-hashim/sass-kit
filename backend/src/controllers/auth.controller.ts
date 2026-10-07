@@ -74,7 +74,7 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
         const user = await tx.user.upsert({
           where: { googleId: identity.googleId },
           create: identity,
-          update: { email: identity.email, name: identity.name },
+          update: { email: identity.email },
         })
         if (oldToken) await tx.session.deleteMany({ where: { tokenHash: hashToken(oldToken) } })
         await tx.session.create({
@@ -103,5 +103,31 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
     res.clearCookie(SESSION_COOKIE, { ...cookieOptions, path: '/' })
     res.status(204).end()
   }
-  return { start, callback, logout }
+  const updateProfile: RequestHandler = async (req, res) => {
+    if (req.headers.origin !== env.frontendUrl) {
+      res.status(403).json({ error: 'Invalid request origin.' })
+      return
+    }
+    const name = typeof req.body?.name === 'string' ? req.body.name.trim() : ''
+    if (!name || name.length > 100) {
+      res.status(400).json({ error: 'Enter a name between 1 and 100 characters.' })
+      return
+    }
+    const user = await db.user.update({
+      where: { id: res.locals.user.id },
+      data: { name },
+      select: { id: true, name: true, email: true },
+    })
+    res.json({ data: user })
+  }
+  const deleteAccount: RequestHandler = async (req, res) => {
+    if (req.headers.origin !== env.frontendUrl) {
+      res.status(403).json({ error: 'Invalid request origin.' })
+      return
+    }
+    await db.user.delete({ where: { id: res.locals.user.id } })
+    res.clearCookie(SESSION_COOKIE, { ...cookieOptions, path: '/' })
+    res.status(204).end()
+  }
+  return { start, callback, logout, updateProfile, deleteAccount }
 }

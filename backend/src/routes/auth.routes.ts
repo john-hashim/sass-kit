@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@prisma/client'
-import { Router } from 'express'
+import { json, Router } from 'express'
 import { authController } from '../controllers/auth.controller.js'
 import { requireAuth } from '../middleware/auth.middleware.js'
 import type { GoogleProvider } from '../services/google.service.js'
@@ -10,6 +10,8 @@ export function authRoutes(db: PrismaClient, google: GoogleProvider) {
   router.get('/google', controller.start)
   router.get('/google/callback', controller.callback)
   router.get('/me', requireAuth(db), (_req, res) => res.json({ data: res.locals.user }))
+  router.patch('/me', requireAuth(db), json({ limit: '8kb' }), controller.updateProfile)
+  router.delete('/me', requireAuth(db), controller.deleteAccount)
   router.post('/logout', controller.logout)
   return router
 }
