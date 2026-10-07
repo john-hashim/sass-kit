@@ -19,6 +19,6 @@ export async function currentUser(db: PrismaClient, token: string | undefined) {
     include: { user: true },
   })
   if (!session || session.expiresAt <= new Date()) return null
-  const { id, email, name } = session.user
-  return { id, email, name }
+  const { id, email, name, theme } = session.user
+  return { id, email, name, theme }
 }

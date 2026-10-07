@@ -25,16 +25,19 @@ it('uses the shared credentialed client for all authentication and account endpo
   try {
     await authService.getMe()
     await authService.updateName('New Name')
+    await authService.updateTheme('system')
     await authService.logout()
     await authService.deleteAccount()
     expect(requests.map(request => [request.method, request.url])).toEqual([
       ['get', '/api/auth/me'],
+      ['patch', '/api/auth/me'],
       ['patch', '/api/auth/me'],
       ['post', '/api/auth/logout'],
       ['delete', '/api/auth/me'],
     ])
     expect(requests.every(request => request.credentials)).toBe(true)
     expect(requests[1]?.data).toBe(JSON.stringify({ name: 'New Name' }))
+    expect(requests[2]?.data).toBe(JSON.stringify({ theme: 'system' }))
     expect(apiClient.defaults.timeout).toBe(10000)
   } finally {
     apiClient.defaults.adapter = originalAdapter

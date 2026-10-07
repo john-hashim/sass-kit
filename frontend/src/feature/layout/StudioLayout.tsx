@@ -39,7 +39,7 @@ export function StudioLayout() {
       }}
     >
       <a
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[500] focus:rounded-md focus:bg-background focus:p-3"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-500 focus:rounded-md focus:bg-background focus:p-3"
         href="#page-content"
       >
         Skip to content

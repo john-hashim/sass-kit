@@ -7,11 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Theme {
+  light
+  dark
+  system
+}
+
 model User {
   id        String    @id @default(cuid())
   googleId  String    @unique
   email     String
   name      String
+  theme     Theme     @default(dark)
   createdAt DateTime  @default(now())
   sessions  Session[]
 }

@@ -1,7 +1,6 @@
 import { Monitor, Moon, Sun } from 'lucide-react'
-import { useState } from 'react'
 import { Label } from '@/components/ui/label'
-import { readTheme, setTheme, type Theme } from '@/feature/theme/theme'
+import { useAccountStore, useUserStore } from '@/store'
 
 const themes = [
   { value: 'light', label: 'Light', icon: Sun },
@@ -10,14 +9,19 @@ const themes = [
 ] as const
 
 export function ThemeSettings() {
-  const [theme, updateTheme] = useState<Theme>(readTheme)
+  const { user, loggingOut } = useUserStore()
+  const { updateTheme, profileSaving, accountDeleting } = useAccountStore()
+  const theme = user?.theme ?? 'dark'
 
   return (
     <section className="flex flex-wrap items-center gap-4" aria-labelledby="theme-heading">
       <h3 id="theme-heading" className="text-sm font-medium text-text-primary">
         Theme
       </h3>
-      <fieldset className="relative grid h-9 w-30 shrink-0 grid-cols-3 rounded-lg border border-[var(--color-border-secondary)] bg-[var(--color-chrome-bg)] p-1">
+      <fieldset
+        className="relative grid h-9 w-30 shrink-0 grid-cols-3 rounded-lg border border-[var(--color-border-secondary)] bg-[var(--color-chrome-bg)] p-1"
+        disabled={!user || profileSaving || accountDeleting || loggingOut}
+      >
         <legend className="sr-only">Choose theme</legend>
         <span
           aria-hidden
@@ -36,8 +40,9 @@ export function ThemeSettings() {
               checked={theme === value}
               className="peer sr-only"
               onChange={() => {
-                setTheme(value)
-                updateTheme(value)
+                void updateTheme(value).catch(() => {
+                  // The account store exposes the save error in account settings.
+                })
               }}
             />
             <Label

@@ -6,7 +6,13 @@ import type { User } from '@/types/auth'
 import { makeStore, response, unauthorized, user } from './helpers'
 
 vi.mock('@/api/services/auth', () => ({
-  authService: { getMe: vi.fn(), logout: vi.fn(), updateName: vi.fn(), deleteAccount: vi.fn() },
+  authService: {
+    getMe: vi.fn(),
+    logout: vi.fn(),
+    updateName: vi.fn(),
+    updateTheme: vi.fn(),
+    deleteAccount: vi.fn(),
+  },
 }))
 
 beforeEach(() => vi.resetAllMocks())
@@ -27,6 +33,46 @@ describe('accountSlice', () => {
       profileSaving: false,
       profileError: null,
     })
+  })
+
+  it('persists theme in the shared user and restores it on refresh', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    const updated: User = { ...user, theme: 'light' }
+    vi.mocked(authService.updateTheme).mockResolvedValue(response(updated))
+    await store.getState().updateTheme('light')
+    expect(authService.updateTheme).toHaveBeenCalledWith('light')
+    expect(store.getState().user?.theme).toBe('light')
+    store.getState().resetSession()
+    vi.mocked(authService.getMe).mockResolvedValue(response(updated))
+    await store.getState().refresh()
+    expect(store.getState().user?.theme).toBe('light')
+  })
+
+  it('preserves the saved theme if a theme request fails', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    vi.mocked(authService.updateTheme).mockRejectedValue(new AxiosError('offline', 'ERR_NETWORK'))
+    await expect(store.getState().updateTheme('system')).rejects.toThrow()
+    expect(store.getState().user?.theme).toBe('dark')
+    expect(store.getState().profileSaving).toBe(false)
+    expect(store.getState().profileError).toContain('Network error')
+  })
+
+  it('does not restore a user when a theme response arrives after logout', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    let finish: (value: AxiosResponse<ApiResponse<User>>) => void = () => {}
+    vi.mocked(authService.updateTheme).mockReturnValue(
+      new Promise(resolve => {
+        finish = resolve
+      })
+    )
+    const pending = store.getState().updateTheme('system')
+    store.getState().resetSession()
+    finish(response({ ...user, theme: 'system' }))
+    await pending
+    expect(store.getState().user).toBeNull()
   })
 
   it('preserves the profile when saving fails and exposes backend validation', async () => {

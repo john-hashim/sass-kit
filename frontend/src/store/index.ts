@@ -34,6 +34,7 @@ export const useAccountStore = () =>
       profileError: state.profileError,
       deleteError: state.deleteError,
       updateName: state.updateName,
+      updateTheme: state.updateTheme,
       deleteAccount: state.deleteAccount,
       clearAccountErrors: state.clearAccountErrors,
     }))

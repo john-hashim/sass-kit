@@ -55,7 +55,7 @@ export function OutletHeader({
             flexShrink: 0,
           }}
         />
-        <span className="truncate text-sm text-[var(--color-secondary-text)]" title={pageTitle}>
+        <span className="truncate text-sm text-text-secondary" title={pageTitle}>
           {pageTitle}
         </span>
       </div>

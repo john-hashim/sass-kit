@@ -83,6 +83,7 @@ test('OAuth creates a persistent user and hashed session; logout revokes access'
   assert.match(String(response.headers['set-cookie']), /HttpOnly/)
   const me = await agent.get('/api/auth/me').expect(200)
   assert.equal(me.body.data.email, 'test@example.com')
+  assert.equal(me.body.data.theme, 'dark')
   assert.equal(await db.user.count(), 1)
   assert.equal(await db.session.count(), 1)
   const saved = await db.session.findFirstOrThrow()
@@ -173,6 +174,47 @@ test('profile updates validate origin and name, and survive a subsequent Google 
   await second.agent.get(second.callback).expect(302)
   const me = await second.agent.get('/api/auth/me').expect(200)
   assert.equal(me.body.data.name, 'New Name')
+})
+
+test('theme updates validate values, persist, and preserve the user name', async () => {
+  const { agent, callback } = await beginLogin()
+  await agent.get(callback).expect(302)
+  await request(app).patch('/api/auth/me').send({ theme: 'light' }).expect(401)
+  await agent
+    .patch('/api/auth/me')
+    .set('Origin', 'https://attacker.example')
+    .send({ theme: 'light' })
+    .expect(403)
+  for (const theme of ['invalid', '', null, 1, {}, ['dark']]) {
+    await agent.patch('/api/auth/me').set('Origin', env.frontendUrl).send({ theme }).expect(400)
+  }
+  await agent.patch('/api/auth/me').set('Origin', env.frontendUrl).send({}).expect(400)
+  for (const theme of ['light', 'dark', 'system']) {
+    const updated = await agent
+      .patch('/api/auth/me')
+      .set('Origin', env.frontendUrl)
+      .send({ theme })
+      .expect(200)
+    assert.equal(updated.body.data.theme, theme)
+    assert.equal(updated.body.data.name, 'Test User')
+  }
+  const updated = await agent
+    .patch('/api/auth/me')
+    .set('Origin', env.frontendUrl)
+    .send({ name: 'New Name', theme: 'light' })
+    .expect(200)
+  assert.equal(updated.body.data.name, 'New Name')
+  assert.equal(updated.body.data.theme, 'light')
+  const second = await beginLogin()
+  await second.agent.get(second.callback).expect(302)
+  const me = await second.agent.get('/api/auth/me').expect(200)
+  assert.equal(me.body.data.theme, 'light')
+  const renamed = await second.agent
+    .patch('/api/auth/me')
+    .set('Origin', env.frontendUrl)
+    .send({ name: 'Another Name' })
+    .expect(200)
+  assert.equal(renamed.body.data.theme, 'light')
 })
 
 test('account deletion validates origin and revokes every session', async () => {

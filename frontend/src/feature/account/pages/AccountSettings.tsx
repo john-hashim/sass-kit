@@ -146,13 +146,13 @@ export function AccountSettings() {
         </Card>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-[var(--color-border-secondary)]" />
+            <span className="w-full border-t border-(--color-border-secondary)" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-8 font-semibold text-error">Danger Zone</span>
           </div>
         </div>
-        <Card className="border-[var(--color-border-primary)]">
+        <Card className="border-(--color-border-primary)">
           <div className="p-6">
             <h2 className="font-semibold text-lg text-error leading-none tracking-tight">
               Delete account

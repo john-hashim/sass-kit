@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import type { PrismaClient } from '@prisma/client'
+import { type PrismaClient, Theme } from '@prisma/client'
 import type { RequestHandler } from 'express'
 import { env } from '../config/env.js'
 import type { GoogleProvider } from '../services/google.service.js'
@@ -108,15 +108,29 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
       res.status(403).json({ error: 'Invalid request origin.' })
       return
     }
-    const name = typeof req.body?.name === 'string' ? req.body.name.trim() : ''
-    if (!name || name.length > 100) {
+    const { name, theme } = req.body ?? {}
+    if (name === undefined && theme === undefined) {
+      res.status(400).json({ error: 'Provide a name or theme to update.' })
+      return
+    }
+    if (
+      name !== undefined &&
+      (typeof name !== 'string' || !name.trim() || name.trim().length > 100)
+    ) {
       res.status(400).json({ error: 'Enter a name between 1 and 100 characters.' })
+      return
+    }
+    if (theme !== undefined && !Object.values(Theme).includes(theme)) {
+      res.status(400).json({ error: 'Choose light, dark, or system for your theme.' })
       return
     }
     const user = await db.user.update({
       where: { id: res.locals.user.id },
-      data: { name },
-      select: { id: true, name: true, email: true },
+      data: {
+        ...(name !== undefined ? { name: name.trim() } : {}),
+        ...(theme !== undefined ? { theme } : {}),
+      },
+      select: { id: true, name: true, email: true, theme: true },
     })
     res.json({ data: user })
   }
