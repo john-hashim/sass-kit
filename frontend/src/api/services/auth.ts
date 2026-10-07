@@ -6,11 +6,11 @@ import type { Theme, User } from '@/types/auth'
 
 export const authService = {
   getMe: (): Promise<AxiosResponse<ApiResponse<User>>> => apiClient.get(ENDPOINTS.AUTH.GET_ME),
-  logout: (): Promise<AxiosResponse<void>> => apiClient.post(ENDPOINTS.AUTH.LOGOUT),
+  logout: (): Promise<AxiosResponse<ApiResponse>> => apiClient.post(ENDPOINTS.AUTH.LOGOUT),
   updateName: (name: string): Promise<AxiosResponse<ApiResponse<User>>> =>
     apiClient.patch(ENDPOINTS.AUTH.UPDATE_NAME, { name }),
   updateTheme: (theme: Theme): Promise<AxiosResponse<ApiResponse<User>>> =>
     apiClient.patch(ENDPOINTS.AUTH.UPDATE_THEME, { theme }),
-  deleteAccount: (): Promise<AxiosResponse<void>> =>
+  deleteAccount: (): Promise<AxiosResponse<ApiResponse>> =>
     apiClient.delete(ENDPOINTS.AUTH.DELETE_ACCOUNT),
 }

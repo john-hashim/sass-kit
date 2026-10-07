@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { authService } from '@/api/services/auth'
 import type { ApiResponse } from '@/types/api'
 import type { User } from '@/types/auth'
+import { showNotification } from '@/utils/notifications'
 import { makeStore, response, unauthorized, user } from './helpers'
 
 vi.mock('@/api/services/auth', () => ({
@@ -16,6 +17,7 @@ vi.mock('@/api/services/auth', () => ({
 }))
 
 beforeEach(() => vi.resetAllMocks())
+vi.mock('@/utils/notifications', () => ({ showNotification: vi.fn() }))
 
 describe('accountSlice', () => {
   it('updates the shared profile and deduplicates saving', async () => {
@@ -28,6 +30,7 @@ describe('accountSlice', () => {
       store.getState().updateName(updated.name),
     ])
     expect(authService.updateName).toHaveBeenCalledTimes(1)
+    expect(showNotification).toHaveBeenCalledExactlyOnceWith('success', 'Success')
     expect(store.getState()).toMatchObject({
       user: updated,
       profileSaving: false,
@@ -43,6 +46,7 @@ describe('accountSlice', () => {
     await store.getState().updateTheme('light')
     expect(authService.updateTheme).toHaveBeenCalledWith('light')
     expect(store.getState().user?.theme).toBe('light')
+    expect(showNotification).not.toHaveBeenCalled()
     store.getState().resetSession()
     vi.mocked(authService.getMe).mockResolvedValue(response(updated))
     await store.getState().refresh()
@@ -105,7 +109,7 @@ describe('accountSlice', () => {
     vi.mocked(authService.updateName).mockRejectedValue(
       new AxiosError('invalid', undefined, undefined, undefined, {
         status: 400,
-        data: { error: 'Name is required.' },
+        data: { status: 'failure', message: 'Name is required.' },
       } as AxiosResponse)
     )
     await expect(store.getState().updateName('')).rejects.toThrow()
@@ -113,6 +117,39 @@ describe('accountSlice', () => {
       user,
       profileSaving: false,
       profileError: 'Name is required.',
+    })
+  })
+
+  it('rejects a failure envelope without changing the name or showing a success toast', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    vi.mocked(authService.updateName).mockResolvedValue({
+      data: {
+        status: 'failure',
+        message: 'Name could not be saved.',
+        data: { ...user, name: 'Wrong' },
+      },
+    } as AxiosResponse<ApiResponse<User>>)
+    await expect(store.getState().updateName('Wrong')).rejects.toThrow('Name could not be saved.')
+    expect(store.getState()).toMatchObject({
+      user,
+      profileSaving: false,
+      profileError: 'Name could not be saved.',
+    })
+    expect(showNotification).not.toHaveBeenCalled()
+  })
+
+  it('keeps the session when deletion returns a failure envelope', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    vi.mocked(authService.deleteAccount).mockResolvedValue({
+      data: { status: 'failure', message: 'Account could not be deleted.' },
+    } as AxiosResponse<ApiResponse>)
+    await expect(store.getState().deleteAccount()).rejects.toThrow('Account could not be deleted.')
+    expect(store.getState()).toMatchObject({
+      user,
+      accountDeleting: false,
+      deleteError: 'Account could not be deleted.',
     })
   })
 
@@ -134,7 +171,10 @@ describe('accountSlice', () => {
       })
     )
     const pending = store.getState().updateName('Late User')
-    vi.mocked(authService.logout).mockResolvedValue({ status: 204 } as AxiosResponse<void>)
+    vi.mocked(authService.logout).mockResolvedValue({
+      status: 200,
+      data: { status: 'success', message: 'Success' },
+    } as AxiosResponse<ApiResponse>)
     await store.getState().logout()
     finish(response({ ...user, name: 'Late User' }))
     await pending
@@ -146,7 +186,10 @@ describe('accountSlice', () => {
     store.setState({ user })
     vi.mocked(authService.deleteAccount)
       .mockRejectedValueOnce(new AxiosError('offline', 'ERR_NETWORK'))
-      .mockResolvedValueOnce({ status: 204 } as AxiosResponse<void>)
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { status: 'success', message: 'Success' },
+      } as AxiosResponse<ApiResponse>)
     await expect(store.getState().deleteAccount()).rejects.toThrow()
     expect(store.getState()).toMatchObject({ user, accountDeleting: false })
     expect(store.getState().deleteError).toContain('Network error')

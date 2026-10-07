@@ -72,8 +72,29 @@ async function beginLogin() {
 }
 
 test('health checks the local database and private endpoint rejects anonymous users', async () => {
-  await request(app).get('/health').expect(200)
-  await request(app).get('/api/auth/me').expect(401)
+  const health = await request(app).get('/health').expect(200)
+  assert.deepEqual(health.body, {
+    status: 'success',
+    message: 'Server is healthy.',
+    data: { status: 'ok' },
+  })
+  const anonymous = await request(app).get('/api/auth/me').expect(401)
+  assert.deepEqual(anonymous.body, { status: 'failure', message: 'Sign in to continue.' })
+  const missing = await request(app).get('/api/missing').expect(404)
+  assert.deepEqual(missing.body, { status: 'failure', message: 'Not found.' })
+})
+
+test('unexpected errors return a structured failure without internal details', async () => {
+  const failedDb = {
+    $queryRaw: async () => {
+      throw new Error('Private database details')
+    },
+  } as unknown as PrismaClient
+  const result = await request(createApp(failedDb, google)).get('/health').expect(500)
+  assert.deepEqual(result.body, {
+    status: 'failure',
+    message: 'Something went wrong. Please try again.',
+  })
 })
 
 test('OAuth creates a persistent user and hashed session; logout revokes access', async () => {
@@ -82,15 +103,22 @@ test('OAuth creates a persistent user and hashed session; logout revokes access'
   assert.equal(response.headers.location, `${env.frontendUrl}/dashboard`)
   assert.match(String(response.headers['set-cookie']), /HttpOnly/)
   const me = await agent.get('/api/auth/me').expect(200)
+  assert.equal(me.body.status, 'success')
+  assert.equal(me.body.message, 'User retrieved successfully.')
   assert.equal(me.body.data.email, 'test@example.com')
   assert.equal(me.body.data.theme, 'dark')
   assert.equal(await db.user.count(), 1)
   assert.equal(await db.session.count(), 1)
   const saved = await db.session.findFirstOrThrow()
   assert.match(saved.tokenHash, /^[a-f0-9]{64}$/)
-  await agent.post('/api/auth/logout').set('Origin', 'https://attacker.example').expect(403)
+  const invalidOrigin = await agent
+    .post('/api/auth/logout')
+    .set('Origin', 'https://attacker.example')
+    .expect(403)
+  assert.deepEqual(invalidOrigin.body, { status: 'failure', message: 'Invalid request origin.' })
   await agent.get('/api/auth/me').expect(200)
-  await agent.post('/api/auth/logout').set('Origin', env.frontendUrl).expect(204)
+  const logout = await agent.post('/api/auth/logout').set('Origin', env.frontendUrl).expect(200)
+  assert.deepEqual(logout.body, { status: 'success', message: 'Logged out successfully.' })
   await agent.get('/api/auth/me').expect(401)
   assert.equal(await db.session.count(), 0)
 })
@@ -169,6 +197,8 @@ test('profile updates validate origin and name, and survive a subsequent Google 
     .send({ name: '  New Name  ' })
     .expect(200)
   assert.equal(updated.body.data.name, 'New Name')
+  assert.equal(updated.body.status, 'success')
+  assert.equal(updated.body.message, 'Profile updated successfully.')
   assert.equal(updated.body.data.googleId, undefined)
   const second = await beginLogin()
   await second.agent.get(second.callback).expect(302)
@@ -225,7 +255,8 @@ test('account deletion validates origin and revokes every session', async () => 
   await second.agent.get(second.callback).expect(302)
   await first.agent.delete('/api/auth/me').set('Origin', 'https://attacker.example').expect(403)
   assert.equal(await db.user.count(), 1)
-  const result = await first.agent.delete('/api/auth/me').set('Origin', env.frontendUrl).expect(204)
+  const result = await first.agent.delete('/api/auth/me').set('Origin', env.frontendUrl).expect(200)
+  assert.deepEqual(result.body, { status: 'success', message: 'Account deleted successfully.' })
   assert.match(String(result.headers['set-cookie']), /redaction_session=;/)
   await first.agent.get('/api/auth/me').expect(401)
   await second.agent.get('/api/auth/me').expect(401)

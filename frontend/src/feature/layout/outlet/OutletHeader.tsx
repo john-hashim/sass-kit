@@ -1,5 +1,6 @@
 import { Bell, LifeBuoy, Menu, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { AppName } from '@/feature/layout/AppName'
 import { IconButton } from '@/feature/layout/IconButton'
 
@@ -64,9 +65,16 @@ export function OutletHeader({
         className="outlet-header-actions"
         style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 4 : 8, flexShrink: 0 }}
       >
-        <IconButton aria-label="Support" type="button">
-          <LifeBuoy size={20} />
-        </IconButton>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <IconButton aria-label="Support" type="button">
+              <LifeBuoy size={20} />
+            </IconButton>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            Support
+          </TooltipContent>
+        </Tooltip>
         {!isMobile && (
           <span
             style={{
@@ -77,9 +85,16 @@ export function OutletHeader({
             }}
           />
         )}
-        <IconButton aria-label="Notifications" type="button">
-          <Bell size={20} />
-        </IconButton>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <IconButton aria-label="Notifications" type="button">
+              <Bell size={20} />
+            </IconButton>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            Notifications
+          </TooltipContent>
+        </Tooltip>
         {!isMobile && (
           <span
             style={{

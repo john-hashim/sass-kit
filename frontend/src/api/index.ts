@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Testing only: disable before production to remove the simulated server delay.
 const ENABLE_API_DELAY = true
-const API_DELAY_MS = 2000
+const API_DELAY_MS = 1000
 
 const apiClient = axios.create({
   timeout: 10000,

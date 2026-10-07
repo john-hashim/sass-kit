@@ -11,7 +11,8 @@ export const user: User = {
   email: 'test@example.com',
   theme: 'dark',
 }
-export const response = (data: User) => ({ data: { data } }) as AxiosResponse<ApiResponse<User>>
+export const response = (data: User) =>
+  ({ data: { status: 'success', message: 'Success', data } }) as AxiosResponse<ApiResponse<User>>
 export const unauthorized = () =>
   new AxiosError('Unauthorized', undefined, undefined, undefined, { status: 401 } as AxiosResponse)
 export const makeStore = () =>

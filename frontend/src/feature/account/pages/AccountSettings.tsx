@@ -17,7 +17,6 @@ import { Label } from '@/components/ui/label'
 import { initials } from '@/feature/layout/Icon'
 import { ThemeSettings } from '@/feature/theme/components/ThemeSettings'
 import { useAccountStore, useUserStore } from '@/store'
-import { showNotification } from '@/utils/notifications'
 
 export function AccountSettings() {
   const { user } = useUserStore()
@@ -39,7 +38,6 @@ export function AccountSettings() {
       const updated = await updateName(name.trim())
       if (!updated) return
       setName(updated.name)
-      showNotification('success', 'Name updated.')
     } catch {
       // The store exposes the request error to the form.
     }

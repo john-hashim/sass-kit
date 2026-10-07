@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand'
 import { getApiErrorDetails } from '@/api/errors'
+import { requireApiSuccess, requireUserData } from '@/api/responses'
 import { authService } from '@/api/services/auth'
 import type { User } from '@/types/auth'
 import type { StoreState } from '../types'
@@ -31,8 +32,8 @@ export const createUserSlice: StateCreator<StoreState, [], [], UserSlice> = (set
     set({ loading: true, error: null })
     try {
       const response = await authService.getMe()
-      if (!response.data.data) throw new Error('Invalid profile response.')
-      if (get().sessionVersion === version) set({ user: response.data.data })
+      const user = requireUserData(response.data)
+      if (get().sessionVersion === version) set({ user })
     } catch (error) {
       if (get().sessionVersion !== version) return
       const details = getApiErrorDetails(error)
@@ -46,7 +47,8 @@ export const createUserSlice: StateCreator<StoreState, [], [], UserSlice> = (set
     if (get().loggingOut) return
     set({ loggingOut: true, logoutError: null })
     try {
-      await authService.logout()
+      const response = await authService.logout()
+      requireApiSuccess(response.data)
       get().resetSession()
     } catch (error) {
       const details = getApiErrorDetails(error, 'Unable to sign out. Please try again.')

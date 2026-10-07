@@ -12,6 +12,7 @@ import {
   STATE_COOKIE,
   sessionLifetime,
 } from '../services/session.service.js'
+import { type ApiResponse, ApiStatus } from '../types/api.js'
 
 export function authController(db: PrismaClient, google: GoogleProvider) {
   const start: RequestHandler = async (_req, res) => {
@@ -95,33 +96,63 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
   const logout: RequestHandler = async (req, res) => {
     // Only our frontend may submit this cookie-authenticated mutation.
     if (req.headers.origin !== env.frontendUrl) {
-      res.status(403).json({ error: 'Invalid request origin.' })
+      res
+        .status(403)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Invalid request origin.',
+        } satisfies ApiResponse)
       return
     }
     const token = readCookie(req, SESSION_COOKIE)
     if (token) await db.session.deleteMany({ where: { tokenHash: hashToken(token) } })
     res.clearCookie(SESSION_COOKIE, { ...cookieOptions, path: '/' })
-    res.status(204).end()
+    res
+      .status(200)
+      .json({
+        status: ApiStatus.SUCCESS,
+        message: 'Logged out successfully.',
+      } satisfies ApiResponse)
   }
   const updateProfile: RequestHandler = async (req, res) => {
     if (req.headers.origin !== env.frontendUrl) {
-      res.status(403).json({ error: 'Invalid request origin.' })
+      res
+        .status(403)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Invalid request origin.',
+        } satisfies ApiResponse)
       return
     }
     const { name, theme } = req.body ?? {}
     if (name === undefined && theme === undefined) {
-      res.status(400).json({ error: 'Provide a name or theme to update.' })
+      res
+        .status(400)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Provide a name or theme to update.',
+        } satisfies ApiResponse)
       return
     }
     if (
       name !== undefined &&
       (typeof name !== 'string' || !name.trim() || name.trim().length > 100)
     ) {
-      res.status(400).json({ error: 'Enter a name between 1 and 100 characters.' })
+      res
+        .status(400)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Enter a name between 1 and 100 characters.',
+        } satisfies ApiResponse)
       return
     }
     if (theme !== undefined && !Object.values(Theme).includes(theme)) {
-      res.status(400).json({ error: 'Choose light, dark, or system for your theme.' })
+      res
+        .status(400)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Choose light, dark, or system for your theme.',
+        } satisfies ApiResponse)
       return
     }
     const user = await db.user.update({
@@ -132,16 +163,32 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
       },
       select: { id: true, name: true, email: true, theme: true },
     })
-    res.json({ data: user })
+    res
+      .status(200)
+      .json({
+        status: ApiStatus.SUCCESS,
+        message: 'Profile updated successfully.',
+        data: user,
+      } satisfies ApiResponse<typeof user>)
   }
   const deleteAccount: RequestHandler = async (req, res) => {
     if (req.headers.origin !== env.frontendUrl) {
-      res.status(403).json({ error: 'Invalid request origin.' })
+      res
+        .status(403)
+        .json({
+          status: ApiStatus.FAILURE,
+          message: 'Invalid request origin.',
+        } satisfies ApiResponse)
       return
     }
     await db.user.delete({ where: { id: res.locals.user.id } })
     res.clearCookie(SESSION_COOKIE, { ...cookieOptions, path: '/' })
-    res.status(204).end()
+    res
+      .status(200)
+      .json({
+        status: ApiStatus.SUCCESS,
+        message: 'Account deleted successfully.',
+      } satisfies ApiResponse)
   }
   return { start, callback, logout, updateProfile, deleteAccount }
 }

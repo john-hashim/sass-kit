@@ -1,5 +1,5 @@
 import type { AxiosAdapter } from 'axios'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import apiClient from '@/api'
 import { authService } from '@/api/services/auth'
 
@@ -14,20 +14,27 @@ it('uses the shared credentialed client for all authentication and account endpo
       credentials: config.withCredentials,
     })
     return {
-      data: {},
-      status: config.method === 'get' ? 200 : 204,
+      data: { status: 'success', message: 'Success' },
+      status: 200,
       statusText: 'OK',
       headers: {},
       config,
     }
   }
   apiClient.defaults.adapter = adapter
+  vi.useFakeTimers()
   try {
-    await authService.getMe()
-    await authService.updateName('New Name')
-    await authService.updateTheme('system')
-    await authService.logout()
-    await authService.deleteAccount()
+    for (const call of [
+      () => authService.getMe(),
+      () => authService.updateName('New Name'),
+      () => authService.updateTheme('system'),
+      () => authService.logout(),
+      () => authService.deleteAccount(),
+    ]) {
+      const pending = call()
+      await vi.runAllTimersAsync()
+      await pending
+    }
     expect(requests.map(request => [request.method, request.url])).toEqual([
       ['get', '/api/auth/me'],
       ['patch', '/api/auth/me'],
@@ -41,5 +48,6 @@ it('uses the shared credentialed client for all authentication and account endpo
     expect(apiClient.defaults.timeout).toBe(10000)
   } finally {
     apiClient.defaults.adapter = originalAdapter
+    vi.useRealTimers()
   }
 })

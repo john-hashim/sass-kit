@@ -48,7 +48,10 @@ describe('userSlice', () => {
     store.setState({ user })
     vi.mocked(authService.logout)
       .mockRejectedValueOnce(new AxiosError('offline', 'ERR_NETWORK'))
-      .mockResolvedValueOnce({ status: 204 } as AxiosResponse<void>)
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { status: 'success', message: 'Success' },
+      } as AxiosResponse<ApiResponse>)
     await expect(store.getState().logout()).rejects.toThrow()
     expect(store.getState().user).toEqual(user)
     expect(store.getState().loggingOut).toBe(false)
@@ -70,5 +73,33 @@ describe('userSlice', () => {
     finish(response(user))
     await pending
     expect(store.getState()).toMatchObject({ user: null, initialized: true, loading: false })
+  })
+
+  it('keeps the user signed in when logout returns a failure envelope', async () => {
+    const store = makeStore()
+    store.setState({ user })
+    vi.mocked(authService.logout).mockResolvedValue({
+      data: { status: 'failure', message: 'Sign out failed.' },
+    } as AxiosResponse<ApiResponse>)
+    await expect(store.getState().logout()).rejects.toThrow('Sign out failed.')
+    expect(store.getState()).toMatchObject({
+      user,
+      loggingOut: false,
+      logoutError: 'Sign out failed.',
+    })
+  })
+
+  it('does not restore malformed user data', async () => {
+    const store = makeStore()
+    vi.mocked(authService.getMe).mockResolvedValue(
+      response({ ...user, theme: 'invalid' } as unknown as User)
+    )
+    await store.getState().refresh()
+    expect(store.getState()).toMatchObject({
+      user: null,
+      loading: false,
+      initialized: true,
+      error: 'Invalid profile response.',
+    })
   })
 })

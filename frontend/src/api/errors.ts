@@ -10,7 +10,7 @@ export interface ApiErrorDetails {
 const getResponseMessage = (data: unknown): string | undefined => {
   if (!data || typeof data !== 'object') return undefined
   const body = data as { message?: unknown; error?: unknown }
-  const message = body.error ?? body.message
+  const message = body.message ?? body.error
   return typeof message === 'string' && message.trim() ? message : undefined
 }
 
@@ -46,14 +46,15 @@ export const getApiErrorDetails = (
   if (error.response.status === 401) {
     return {
       kind: 'unauthorized',
-      message: 'Session expired. Please login again.',
+      message: getResponseMessage(error.response.data) ?? 'Session expired. Please login again.',
     }
   }
 
   if (error.response.status >= 500) {
     return {
       kind: 'server',
-      message: 'Server is unavailable. Please try again later.',
+      message:
+        getResponseMessage(error.response.data) ?? 'Server is unavailable. Please try again later.',
     }
   }
 

@@ -1,9 +1,11 @@
 import type { AxiosResponse } from 'axios'
 import type { StateCreator } from 'zustand'
 import { getApiErrorDetails } from '@/api/errors'
+import { requireApiSuccess, requireUserData } from '@/api/responses'
 import { authService } from '@/api/services/auth'
 import type { ApiResponse } from '@/types/api'
 import type { Theme, User } from '@/types/auth'
+import { showNotification } from '@/utils/notifications'
 import type { StoreState } from '../types'
 
 export interface AccountSlice {
@@ -35,10 +37,11 @@ export const createAccountSlice: StateCreator<StoreState, [], [], AccountSlice> 
     set({ [savingKey]: true, profileError: null })
     try {
       const response = await request()
-      if (!response.data.data) throw new Error('Invalid profile response.')
+      const user = requireUserData(response.data)
       if (get().sessionVersion !== version) return
-      set({ user: response.data.data })
-      return response.data.data
+      set({ user })
+      if (savingKey === 'profileSaving') showNotification('success', response.data.message)
+      return user
     } catch (error) {
       if (get().sessionVersion === version) {
         const details = getApiErrorDetails(error, 'Unable to save your profile. Please try again.')
@@ -71,7 +74,8 @@ export const createAccountSlice: StateCreator<StoreState, [], [], AccountSlice> 
       const version = get().sessionVersion
       set({ accountDeleting: true, deleteError: null })
       try {
-        await authService.deleteAccount()
+        const response = await authService.deleteAccount()
+        requireApiSuccess(response.data)
         if (get().sessionVersion === version) get().resetSession()
       } catch (error) {
         if (get().sessionVersion === version) {
