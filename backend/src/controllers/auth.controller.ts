@@ -87,7 +87,7 @@ export function authController(db: PrismaClient, google: GoogleProvider) {
         })
       })
       res.cookie(SESSION_COOKIE, token, { ...cookieOptions, path: '/', maxAge: sessionLifetime })
-      res.redirect(`${env.frontendUrl}/dashboard`)
+      res.redirect(`${env.frontendUrl}/files`)
     } catch {
       fail()
     }

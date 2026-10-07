@@ -100,7 +100,7 @@ test('unexpected errors return a structured failure without internal details', a
 test('OAuth creates a persistent user and hashed session; logout revokes access', async () => {
   const { agent, callback } = await beginLogin()
   const response = await agent.get(callback).expect(302)
-  assert.equal(response.headers.location, `${env.frontendUrl}/dashboard`)
+  assert.equal(response.headers.location, `${env.frontendUrl}/files`)
   assert.match(String(response.headers['set-cookie']), /HttpOnly/)
   const me = await agent.get('/api/auth/me').expect(200)
   assert.equal(me.body.status, 'success')

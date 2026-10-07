@@ -32,6 +32,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ expanded, isMobile, onClose })
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const transitionDuration = expanded ? 100 : 250
+  const transitionEasing = expanded ? 'ease-out' : 'ease-in-out'
 
   const handleClose = useCallback(() => {
     onClose()
@@ -80,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ expanded, isMobile, onClose })
           opacity: expanded ? 1 : 0,
           visibility: expanded ? 'visible' : 'hidden',
           pointerEvents: expanded ? 'auto' : 'none',
-          transition: `opacity 250ms ease-in-out, visibility 0s linear ${expanded ? 0 : 250}ms`,
+          transition: `opacity ${transitionDuration}ms ${transitionEasing}, visibility 0s linear ${expanded ? 0 : transitionDuration}ms`,
         }}
       />
       <aside
@@ -99,8 +101,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ expanded, isMobile, onClose })
           bottom: 0,
           overflow: 'hidden',
           transform: expanded ? 'translateX(0)' : 'translateX(-100%)',
+          opacity: expanded ? 1 : 0,
           visibility: expanded ? 'visible' : 'hidden',
-          transition: `transform 250ms ease-in-out, visibility 0s linear ${expanded ? 0 : 250}ms`,
+          transition: `transform ${transitionDuration}ms ${transitionEasing}, opacity ${transitionDuration}ms ${transitionEasing}, visibility 0s linear ${expanded ? 0 : transitionDuration}ms`,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -112,7 +115,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ expanded, isMobile, onClose })
               aria-label="Close sidebar"
               onClick={handleClose}
             >
-              <X className="size-5" aria-hidden />
+              <X size={15} aria-hidden />
             </IconButton>
           </div>
           <nav

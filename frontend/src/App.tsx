@@ -41,7 +41,7 @@ export function App() {
           <Route path="/account" element={<AccountSettings />} />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/files" replace />} />
     </Routes>
   )
 }

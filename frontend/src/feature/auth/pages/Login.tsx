@@ -9,7 +9,7 @@ import '../styles/login.css'
 export function Login() {
   const { user } = useUserStore()
   const [params] = useSearchParams()
-  if (user) return <Navigate to="/dashboard" replace />
+  if (user) return <Navigate to="/files" replace />
   const error = params.get('error')
   return (
     <main className="login-page">

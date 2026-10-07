@@ -43,7 +43,7 @@ export function OutletHeader({
           aria-controls="studio-sidebar"
           onClick={onToggleSidebar}
         >
-          <Menu className="size-5" aria-hidden />
+          <Menu size={15} aria-hidden />
         </IconButton>
         <AppName className={isMobile ? 'text-base' : 'text-xl'} />
         <span
@@ -68,7 +68,7 @@ export function OutletHeader({
         <Tooltip>
           <TooltipTrigger asChild>
             <IconButton aria-label="Support" type="button">
-              <LifeBuoy size={20} />
+              <LifeBuoy size={15} />
             </IconButton>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={8}>
@@ -88,7 +88,7 @@ export function OutletHeader({
         <Tooltip>
           <TooltipTrigger asChild>
             <IconButton aria-label="Notifications" type="button">
-              <Bell size={20} />
+              <Bell size={15} />
             </IconButton>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={8}>
